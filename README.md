@@ -1,1 +1,1 @@
-# DjangoVDP
+# DjangoKDR
