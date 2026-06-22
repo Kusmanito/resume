@@ -1,0 +1,123 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* =========================
+   GLOBAL RESET
+========================= */
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+}
+
+/* =========================
+   SVG FIX
+========================= */
+
+/* Главная причина бага */
+svg {
+    max-width: 100%;
+    height: auto;
+    display: inline-block;
+}
+
+/* =========================
+   PAGINATION FIX
+========================= */
+
+.pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 20px;
+    flex-wrap: wrap;
+}
+
+.pagination svg {
+    width: 18px !important;
+    height: 18px !important;
+    min-width: 18px !important;
+    min-height: 18px !important;
+    max-width: 18px !important;
+    max-height: 18px !important;
+}
+
+.pagination a,
+.pagination span {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 36px;
+    height: 36px;
+    padding: 0 12px;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: 0.2s;
+}
+
+/* Светлая тема */
+.pagination a {
+    background: #ffffff;
+    color: #111827;
+    border: 1px solid #d1d5db;
+}
+
+.pagination a:hover {
+    background: #f3f4f6;
+}
+
+/* Активная страница */
+.pagination .active span {
+    background: #2563eb;
+    color: white;
+    border: 1px solid #2563eb;
+}
+
+/* Disabled */
+.pagination .disabled span {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* =========================
+   DARK MODE SUPPORT
+========================= */
+
+.dark .pagination a {
+    background: #1f2937;
+    color: white;
+    border: 1px solid #374151;
+}
+
+.dark .pagination a:hover {
+    background: #374151;
+}
+
+.dark .pagination .active span {
+    background: #3b82f6;
+    color: white;
+}
+
+/* =========================
+   TABLE RESPONSIVE
+========================= */
+
+.table-container {
+    width: 100%;
+    overflow-x: auto;
+}
+
+/* =========================
+   IMAGE SAFETY
+========================= */
+
+img {
+    max-width: 100%;
+    height: auto;
+}
