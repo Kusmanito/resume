@@ -5,7 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{{ config('app.name', 'Техникум') }} — Сертификаты и олимпиады</title>
 
-    <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+<style>
+    {!! file_get_contents(public_path('css/app.css')) !!}
+</style>
 </head>
 <body>
 <header class="site-header">
