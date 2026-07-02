@@ -1,0 +1,880 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Профиль - Система генерации документов практики KDR</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', 'Roboto', Arial, sans-serif;
+            background: #f0f2f5;
+            min-height: 100vh;
+        }
+        
+        /* Header */
+        .top-bar {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 15px 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .top-bar-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .logo-area span {
+            font-size: 28px;
+        }
+        
+        .logo-area h1 {
+            font-size: 20px;
+            font-weight: 500;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .user-name {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255,255,255,0.15);
+            padding: 8px 15px;
+            border-radius: 20px;
+        }
+        
+        .logout-btn {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 20px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .logout-btn:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-2px);
+        }
+        
+        /* Container */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 30px;
+        }
+        
+        /* Messages */
+        .messages {
+            padding: 15px 20px;
+            margin-bottom: 25px;
+            border-radius: 12px;
+            font-size: 14px;
+            animation: slideDown 0.3s ease;
+        }
+        
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .messages.success {
+            background: #d4edda;
+            color: #155724;
+            border-left: 4px solid #28a745;
+        }
+        
+        .messages.error {
+            background: #f8d7da;
+            color: #721c24;
+            border-left: 4px solid #dc3545;
+        }
+        
+        /* Sections */
+        .section {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+        }
+        
+        .section:hover {
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+        
+        .section h2 {
+            color: #1e3c72;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+            border-left: 4px solid #2a5298;
+            padding-left: 15px;
+        }
+        
+        .section h3 {
+            color: #2a5298;
+            margin: 20px 0 15px 0;
+            font-size: 1.1em;
+            font-weight: 600;
+        }
+        
+        /* Form Grid */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 20px;
+        }
+        
+        .form-field {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .form-field label {
+            font-weight: 600;
+            color: #555;
+            margin-bottom: 5px;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .form-field input, 
+        .form-field textarea, 
+        .form-field select {
+            padding: 10px 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+        
+        .form-field input:focus, 
+        .form-field textarea:focus, 
+        .form-field select:focus {
+            outline: none;
+            border-color: #2a5298;
+            box-shadow: 0 0 0 3px rgba(42, 82, 152, 0.1);
+        }
+        
+        .form-field textarea {
+            resize: vertical;
+            min-height: 60px;
+        }
+        
+        input[type="date"] {
+            font-family: inherit;
+        }
+        
+        input[type="date"]::-webkit-calendar-picker-indicator {
+            cursor: pointer;
+            filter: invert(0.4);
+        }
+        
+        /* Buttons */
+        .btn-group {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .btn-save {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+        }
+        
+        .btn-generate {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            color: white;
+        }
+        
+        .btn-template {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+        }
+        
+        .btn-template-all {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            color: #333;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .btn:active {
+            transform: translateY(0);
+        }
+        
+        .templates-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .templates-section h2 {
+            border-left-color: white;
+            color: white;
+        }
+        
+        .template-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .template-buttons .btn {
+            background: rgba(255,255,255,0.2);
+            backdrop-filter: blur(10px);
+            color: white;
+            text-decoration: none;
+            justify-content: center;
+        }
+        
+        .template-buttons .btn:hover {
+            background: rgba(255,255,255,0.3);
+        }
+        
+        @media (max-width: 768px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            .container {
+                padding: 15px;
+            }
+            .section {
+                padding: 15px;
+            }
+            .top-bar-content {
+                flex-direction: column;
+                text-align: center;
+            }
+            .btn-group {
+                flex-direction: column;
+            }
+            .btn {
+                justify-content: center;
+            }
+        }
+        
+        .info-card {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .info-card p {
+            color: #555;
+            font-size: 14px;
+        }
+        
+        hr {
+            margin: 20px 0;
+            border: none;
+            border-top: 2px dashed #e0e0e0;
+        }
+        
+        .loading {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 20px 40px;
+            border-radius: 10px;
+            z-index: 1000;
+        }
+        
+        .loading.active {
+            display: block;
+        }
+        
+        .required-field::after {
+            content: " *";
+            color: #ff4757;
+        }
+        
+        .field-note {
+            font-size: 11px;
+            color: #888;
+            margin-top: 4px;
+        }
+        
+        /* Скрытые поля */
+        input[type="hidden"] {
+            display: none;
+        }
+
+        .btn-template {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="top-bar">
+        <div class="top-bar-content">
+            <div class="logo-area">
+                <span>📋</span>
+                <h1>KDR - Система документооборота практики</h1>
+            </div>
+            <div class="user-info">
+                <div class="user-name">
+                    <span>👤</span>
+                    <span>{{ username }}</span>
+                </div>
+                <a href="/logout/" class="logout-btn" onclick="return confirm('Вы уверены, что хотите выйти?')">
+                    <span>🚪</span>
+                    <span>Выйти</span>
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="container">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="messages {{ message.tags }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+        
+        <form method="POST" id="mainForm">
+            {% csrf_token %}
+            
+            <!-- СКРЫТЫЕ ПОЛЯ ДЛЯ ПЕРЕДАЧИ ДАТ (ВАЖНО!) -->
+            <input type="hidden" name="start" id="hidden_start" value="{{ start|default:'' }}">
+            <input type="hidden" name="final" id="hidden_final" value="{{ final|default:'' }}">
+            
+            <!-- Данные студента -->
+            <div class="section">
+                <h2>👤 Личные данные студента</h2>
+                <div class="form-grid">
+                    <div class="form-field">
+                        <label class="required-field">Фамилия</label>
+                        <input type="text" name="familia" value="{{ student_familia|default:'' }}" placeholder="Иванов">
+                    </div>
+                    <div class="form-field">
+                        <label class="required-field">Имя</label>
+                        <input type="text" name="name" value="{{ student_name|default:'' }}" placeholder="Иван">
+                    </div>
+                    <div class="form-field">
+                        <label>Отчество</label>
+                        <input type="text" name="otchestvo" value="{{ student_otchestvo|default:'' }}" placeholder="Иванович">
+                    </div>
+                    <div class="form-field">
+                        <label>📅 Дата рождения</label>
+                        <input type="date" name="date_birth" value="{{ date_birth|default:'' }}">
+                    </div>
+                    <div class="form-field">
+                        <label class="required-field">Группа</label>
+                        <select name="grupa">
+                            <option value="" {% if not grupa %}selected{% endif %}>-- Выберите группу --</option>
+                            <option value="ИС-24" {% if grupa == 'ИС-24' %}selected{% endif %}>ИС-24</option>
+                            <option value="ОИБ-24" {% if grupa == 'ОИБ-24' %}selected{% endif %}>ОИБ-24</option>
+                        </select>
+                    </div>
+                    <div class="form-field">
+                        <label class="required-field">Курс</label>
+                        <select name="kurs">
+                            <option value="" {% if not kurs %}selected{% endif %}>-- Выберите курс --</option>
+                            <option value="1" {% if kurs == '1' %}selected{% endif %}>1 курс</option>
+                            <option value="2" {% if kurs == '2' %}selected{% endif %}>2 курс</option>
+                            <option value="3" {% if kurs == '3' %}selected{% endif %}>3 курс</option>
+                            <option value="4" {% if kurs == '4' %}selected{% endif %}>4 курс</option>
+                        </select>
+                    </div>
+                    <div class="form-field">
+                        <label class="required-field">Форма обучения</label>
+                        <select name="obuch">
+                            <option value="" {% if not obuch %}selected{% endif %}>-- Выберите форму --</option>
+                            <option value="очная" {% if obuch == 'очная' %}selected{% endif %}>Очная</option>
+                            <option value="заочная" {% if obuch == 'заочная' %}selected{% endif %}>Заочная</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Приложение №1 (к Договору) -->
+            <div class="section">
+                <h2>📎 Приложение №1 (к Договору) - Сведения о практике</h2>
+                <h3>Основная информация</h3>
+                <div class="form-grid">
+                    <div class="form-field">
+                        <label>Наименование модуля:</label>
+                        <input type="text" name="modul" value="{{ modul|default:'' }}">
+                    </div>
+                    <div class="form-field">
+                        <label>📅 Дата начала (календарь):</label>
+                        <input type="date" name="data_start" id="calendar_start" value="{{ data_start|default:'' }}">
+                    </div>
+                    <div class="form-field">
+                        <label>📅 Дата окончания (календарь):</label>
+                        <input type="date" name="data_end" id="calendar_end" value="{{ data_end|default:'' }}">
+                    </div>
+                    <div class="form-field">
+                        <label>Месяц начала (текстом):</label>
+                        <input type="text" name="stmo" id="stmo" value="{{ stmo|default:'' }}" placeholder="января">
+                    </div>
+                    <div class="form-field">
+                        <label>Год начала:</label>
+                        <input type="text" name="year" id="year" value="{{ year|default:'' }}" placeholder="2025">
+                    </div>
+                    <div class="form-field">
+                        <label>Месяц окончания (текстом):</label>
+                        <input type="text" name="fnmo" id="fnmo" value="{{ fnmo|default:'' }}" placeholder="декабря">
+                    </div>
+                    <div class="form-field">
+                        <label class="required-field">Специальность:</label>
+                        <select name="spec">
+                            <option value="" {% if not spec %}selected{% endif %}>-- Выберите специальность --</option>
+                            <option value="09.02.07 Информационные системы и программирование" {% if spec == '09.02.07 Информационные системы и программирование' %}selected{% endif %}>09.02.07 Информационные системы и программирование</option>
+                            <option value="10.02.05 Обеспечение информационной безопасности автоматизированных систем" {% if spec == '10.02.05 Обеспечение информационной безопасности автоматизированных систем' %}selected{% endif %}>10.02.05 Обеспечение информационной безопасности автоматизированных систем</option>
+                        </select>
+                    </div>
+                    <div class="form-field">
+                        <label>Код специальности:</label>
+                        <input type="text" name="kod" value="{{ kod|default:'' }}" placeholder="09.02.07">
+                    </div>
+                    <div class="form-field">
+                        <label>Наименование специальности:</label>
+                        <input type="text" name="name_spec" value="{{ name_spec|default:'' }}">
+                    </div>
+                    <div class="form-field">
+                        <label>Количество часов:</label>
+                        <input type="text" name="akd" value="{{ akd|default:'' }}" placeholder="144">
+                    </div>
+                </div>
+                
+                <h3>Обучающиеся</h3>
+                <div class="form-grid">
+                    <div class="form-field">
+                        <label>ФИО обучающегося 1:</label>
+                        <input type="text" name="fio" value="{{ fio|default:'' }}">
+                    </div>
+                    <div class="form-field">
+                        <label>ФИО обучающегося 2:</label>
+                        <input type="text" name="fio2" value="{{ fio2|default:'' }}">
+                    </div>
+                    <div class="form-field">
+                        <label>Дата рождения 2:</label>
+                        <input type="date" name="date_birth2" value="{{ date_birth2|default:'' }}">
+                    </div>
+                </div>
+                
+                <h3>Руководители практики</h3>
+                <div class="form-grid">
+                    <div class="form-field">
+                        <label>Руководитель от ОО (ФИО):</label>
+                        <input type="text" name="fioRuk" value="{{ fioRuk|default:'' }}">
+                    </div>
+                    <div class="form-field">
+                        <label>Телефон руководителя ОО:</label>
+                        <input type="text" name="num" value="{{ num|default:'' }}">
+                    </div>
+                    <div class="form-field">
+                        <label>Руководитель от ПО (ФИО):</label>
+                        <input type="text" name="fioProfRuk" value="{{ fioProfRuk|default:'' }}">
+                    </div>
+                    <div class="form-field">
+                        <label>Должность:</label>
+                        <input type="text" name="doljnost" value="{{ doljnost|default:'' }}">
+                    </div>
+                    <div class="form-field">
+                        <label>Телефон руководителя от ПО:</label>
+                        <input type="text" name="numProfRuk" value="{{ numProfRuk|default:'' }}">
+                    </div>
+                </div>
+                
+                <h3>Организации</h3>
+                <div class="form-grid">
+                    <div class="form-field">
+                        <label>Профильная организация:</label>
+                        <input type="text" name="org" value="{{ org|default:'' }}">
+                    </div>
+                    <div class="form-field">
+                        <label>Руководитель ПО:</label>
+                        <input type="text" name="ruk" value="{{ ruk|default:'' }}">
+                    </div>
+                    <div class="form-field">
+                        <label>Ответственный (ФИО):</label>
+                        <input type="text" name="fioOtv" value="{{ fioOtv|default:'' }}">
+                    </div>
+                    <div class="form-field">
+                        <label>Должность ответственного:</label>
+                        <input type="text" name="doljOtv" value="{{ doljOtv|default:'' }}">
+                    </div>
+                    <div class="form-field">
+                        <label>Телефон ответственного:</label>
+                        <input type="text" name="numberOtv" value="{{ numberOtv|default:'' }}">
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Аттестационный лист -->
+            <div class="section">
+                <h2>📄 Аттестационный лист</h2>
+                <div class="form-grid">
+                    <div class="form-field">
+                        <label>ФИО студента:</label>
+                        <input type="text" name="attest_fio" value="{{ attest_fio|default:'' }}">
+                    </div>
+                    <div class="form-field">
+                        <label>Специальность:</label>
+                        <select name="spec">
+                            <option value="" {% if not spec %}selected{% endif %}>-- Выберите специальность --</option>
+                            <option value="09.02.07 Информационные системы и программирование" {% if spec == '09.02.07 Информационные системы и программирование' %}selected{% endif %}>09.02.07 Информационные системы и программирование</option>
+                            <option value="10.02.05 Обеспечение информационной безопасности автоматизированных систем" {% if spec == '10.02.05 Обеспечение информационной безопасности автоматизированных систем' %}selected{% endif %}>10.02.05 Обеспечение информационной безопасности автоматизированных систем</option>
+                        </select>
+                    </div>
+                    <div class="form-field">
+                        <label>Группа:</label>
+                        <input type="text" name="grupa" value="{{ grupa|default:'' }}">
+                    </div>
+                    <div class="form-field">
+                        <label>Курс:</label>
+                        <select name="kurs">
+                            <option value="" {% if not kurs %}selected{% endif %}>-- Выберите курс --</option>
+                            <option value="1" {% if kurs == '1' %}selected{% endif %}>1 курс</option>
+                            <option value="2" {% if kurs == '2' %}selected{% endif %}>2 курс</option>
+                            <option value="3" {% if kurs == '3' %}selected{% endif %}>3 курс</option>
+                            <option value="4" {% if kurs == '4' %}selected{% endif %}>4 курс</option>
+                        </select>
+                    </div>
+                    <div class="form-field">
+                        <label>Форма обучения:</label>
+                        <select name="obuch">
+                            <option value="" {% if not obuch %}selected{% endif %}>-- Выберите форму --</option>
+                            <option value="очная" {% if obuch == 'очная' %}selected{% endif %}>Очная</option>
+                            <option value="заочная" {% if obuch == 'заочная' %}selected{% endif %}>Заочная</option>
+                        </select>
+                    </div>
+                    <div class="form-field">
+                        <label>Месяц начала (текстом):</label>
+                        <input type="text" name="data2_start" value="{{ data2_start|default:'' }}" placeholder="сентября">
+                    </div>
+                    <div class="form-field">
+                        <label>Год начала:</label>
+                        <input type="text" name="god_start" value="{{ god_start|default:'' }}" placeholder="2025">
+                    </div>
+                    <div class="form-field">
+                        <label>Месяц окончания (текстом):</label>
+                        <input type="text" name="data4_end" value="{{ data4_end|default:'' }}" placeholder="декабря">
+                    </div>
+                    <div class="form-field">
+                        <label>Год окончания:</label>
+                        <input type="text" name="god_end" value="{{ god_end|default:'' }}" placeholder="2025">
+                    </div>
+                    <div class="form-field">
+                        <label>Вид практики:</label>
+                        <select name="vid">
+                            <option value="" {% if not vid %}selected{% endif %}>-- Выберите вид --</option>
+                            <option value="учебная" {% if vid == 'учебная' %}selected{% endif %}>Учебная практика</option>
+                            <option value="производственная" {% if vid == 'производственная' %}selected{% endif %}>Производственная практика</option>
+                        </select>
+                    </div>
+                    <div class="form-field">
+                        <label>Код модуля:</label>
+                        <input type="text" name="attest_kod" value="{{ attest_kod|default:'' }}">
+                    </div>
+                    <div class="form-field">
+                        <label>Место прохождения:</label>
+                        <input type="text" name="mesto" value="{{ mesto|default:'' }}">
+                    </div>
+                    <div class="form-field">
+                        <label>Адрес:</label>
+                        <input type="text" name="attest_adress" value="{{ attest_adress|default:'' }}">
+                    </div>
+                    <div class="form-field">
+                        <label>Руководитель практики:</label>
+                        <input type="text" name="ruka" value="{{ ruka|default:'' }}">
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Договор -->
+            <div class="section">
+                <h2>📝 Договор о практической подготовке</h2>
+                <div class="form-grid">
+                    <div class="form-field">
+                        <label>Номер договора:</label>
+                        <input type="text" name="num_dogovor" value="{{ num_dogovor|default:'' }}">
+                    </div>
+                    <div class="form-field">
+                        <label>Профильная организация:</label>
+                        <input type="text" name="profORG" value="{{ profORG|default:'' }}">
+                    </div>
+                    <div class="form-field">
+                        <label>Руководитель ПО:</label>
+                        <input type="text" name="ryco" value="{{ ryco|default:'' }}">
+                    </div>
+                    <div class="form-field">
+                        <label>Адрес ПО:</label>
+                        <input type="text" name="contract_adress" value="{{ contract_adress|default:'' }}">
+                    </div>
+                    <div class="form-field">
+                        <label>Телефон ПО:</label>
+                        <input type="text" name="smart" value="{{ smart|default:'' }}">
+                    </div>
+                    <div class="form-field">
+                        <label>Реквизиты ПО:</label>
+                        <input type="text" name="rec" value="{{ rec|default:'' }}">
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Лист контроля -->
+            <div class="section">
+                <h2>📋 Лист контроля посещаемости</h2>
+                <div class="form-grid">
+                    <div class="form-field">
+                        <label>Группа:</label>
+                        <select name="control_gru">
+                            <option value="" {% if not control_gru %}selected{% endif %}>-- Выберите группу --</option>
+                            <option value="ИС-24" {% if control_gru == 'ИС-24' %}selected{% endif %}>ИС-24</option>
+                            <option value="ОИБ-24" {% if control_gru == 'ОИБ-24' %}selected{% endif %}>ОИБ-24</option>
+                        </select>
+                    </div>
+                    <div class="form-field">
+                        <label>Код:</label>
+                        <input type="text" name="control_code" value="{{ control_code|default:'' }}">
+                    </div>
+                    <div class="form-field">
+                        <label>Направление:</label>
+                        <input type="text" name="napra" value="{{ napra|default:'' }}">
+                    </div>
+                    <div class="form-field">
+                        <label>Период практики:</label>
+                        <input type="text" name="control_data" value="{{ control_data|default:'' }}">
+                    </div>
+                    <div class="form-field">
+                        <label>Руководитель от СПО:</label>
+                        <input type="text" name="rycSPO" value="{{ rycSPO|default:'' }}">
+                    </div>
+                    <div class="form-field">
+                        <label>📅 Дата проверки:</label>
+                        <input type="date" name="date_check" value="{{ date_check|default:'' }}">
+                    </div>
+                    <div class="form-field">
+                        <label>Предприятие:</label>
+                        <input type="text" name="pred" value="{{ pred|default:'' }}">
+                    </div>
+                    <div class="form-field">
+                        <label>Руководитель от предприятия:</label>
+                        <input type="text" name="rycP" value="{{ rycP|default:'' }}">
+                    </div>
+                    <div class="form-field">
+                        <label>Присутствующие студенты:</label>
+                        <input type="text" name="control_fio" value="{{ control_fio|default:'' }}">
+                    </div>
+                    <div class="form-field">
+                        <label>Отсутствующие студенты:</label>
+                        <input type="text" name="fioO" value="{{ fioO|default:'' }}">
+                    </div>
+                    <div class="form-field">
+                        <label>Причина отсутствия:</label>
+                        <input type="text" name="pri" value="{{ pri|default:'' }}">
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Приложение №2 -->
+            <div class="section">
+                <h2>🏢 Приложение №2 - Перечень помещений</h2>
+                <div class="form-grid">
+                    <div class="form-field">
+                        <label>Адрес места нахождения:</label>
+                        <input type="text" name="appendix_addres" value="{{ appendix_addres|default:'' }}">
+                    </div>
+                    <div class="form-field">
+                        <label>Наименование помещения:</label>
+                        <input type="text" name="namePomech" value="{{ namePomech|default:'' }}">
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Тип практики -->
+            <div class="section">
+                <h2>🏷️ Тип практики</h2>
+                <div class="form-grid">
+                    <div class="form-field">
+                        <label class="required-field">Выберите тип практики:</label>
+                        <select name="field1">
+                            <option value="" {% if not field1 %}selected{% endif %}>-- Выберите тип --</option>
+                            <option value="учебная" {% if field1 == 'учебная' %}selected{% endif %}>Учебная практика</option>
+                            <option value="производственная" {% if field1 == 'производственная' %}selected{% endif %}>Производственная практика</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Кнопки действий -->
+            <div class="btn-group">
+                <button type="submit" name="save_data" class="btn btn-save">
+                    💾 Сохранить все данные
+                </button>
+                <a href="{% url 'download_blank_templates' %}" class="btn btn-template">
+                    📥 Скачать пустые шаблоны
+                </a>
+                <button type="submit" name="generate_docs" class="btn btn-generate" onclick="return confirm('Проверьте правильность заполнения данных! Сгенерировать все документы?')">
+                    📄 Сгенерировать документы (DOCX)
+                </button>
+            </div>
+        </form>
+        
+        <div class="info-card">
+            <p>ℹ️ <strong>Инструкция:</strong> Заполните все необходимые поля. Поля с календарем (<strong>📅</strong>) поддерживают выбор даты из всплывающего календаря. Нажмите "Сохранить все данные", затем "Сгенерировать документы".</p>
+        </div>
+    </div>
+    
+    <div class="loading" id="loading">
+        <p>⏳ Генерация документов...</p>
+    </div>
+    
+    <script>
+        let isGenerating = false;
+        
+        document.querySelectorAll('.btn-generate').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                if (isGenerating) {
+                    e.preventDefault();
+                    return false;
+                }
+                const loadingDiv = document.getElementById('loading');
+                if (loadingDiv) loadingDiv.classList.add('active');
+                isGenerating = true;
+                setTimeout(function() {
+                    if (loadingDiv) loadingDiv.classList.remove('active');
+                    isGenerating = false;
+                }, 3000);
+            });
+        });
+        
+        window.addEventListener('load', function() {
+            const loadingDiv = document.getElementById('loading');
+            if (loadingDiv) loadingDiv.classList.remove('active');
+            isGenerating = false;
+        });
+        
+        // Автоматическое заполнение полей из календаря
+        document.addEventListener('DOMContentLoaded', function() {
+            function getMonthNameGenitive(monthNumber) {
+                const months = {
+                    1: 'января', 2: 'февраля', 3: 'марта', 4: 'апреля',
+                    5: 'мая', 6: 'июня', 7: 'июля', 8: 'августа',
+                    9: 'сентября', 10: 'октября', 11: 'ноября', 12: 'декабря'
+                };
+                return months[monthNumber] || '';
+            }
+            
+            // Календарь начала
+            const calendarStart = document.getElementById('calendar_start');
+            if (calendarStart) {
+                calendarStart.addEventListener('change', function() {
+                    if (this.value) {
+                        const dateParts = this.value.split('-');
+                        if (dateParts.length === 3) {
+                            const year = dateParts[0];
+                            const month = parseInt(dateParts[1]);
+                            const day = parseInt(dateParts[2]);
+                            const monthName = getMonthNameGenitive(month);
+                            
+                            // Заполняем видимые поля
+                            const stmoInput = document.getElementById('stmo');
+                            if (stmoInput) stmoInput.value = monthName;
+                            
+                            const yearInput = document.getElementById('year');
+                            if (yearInput) yearInput.value = year;
+                            
+                            // Заполняем скрытые поля для передачи в POST
+                            const hiddenStart = document.getElementById('hidden_start');
+                            if (hiddenStart) hiddenStart.value = day;
+                        }
+                    }
+                });
+            }
+            
+            // Календарь окончания
+            const calendarEnd = document.getElementById('calendar_end');
+            if (calendarEnd) {
+                calendarEnd.addEventListener('change', function() {
+                    if (this.value) {
+                        const dateParts = this.value.split('-');
+                        if (dateParts.length === 3) {
+                            const year = dateParts[0];
+                            const month = parseInt(dateParts[1]);
+                            const day = parseInt(dateParts[2]);
+                            const monthName = getMonthNameGenitive(month);
+                            
+                            // Заполняем видимые поля
+                            const fnmoInput = document.getElementById('fnmo');
+                            if (fnmoInput) fnmoInput.value = monthName;
+                            
+                            // Заполняем скрытые поля для передачи в POST
+                            const hiddenFinal = document.getElementById('hidden_final');
+                            if (hiddenFinal) hiddenFinal.value = day;
+                        }
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>
